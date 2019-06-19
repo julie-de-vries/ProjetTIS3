@@ -1,0 +1,82 @@
+    public void ajouterFicheDeSoins(FicheDeSoins f) {
+        try {
+            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+            XMLInputFactory xmlif = XMLInputFactory.newInstance();
+            FileReader fr = new FileReader(repBase + nomFichier);
+            XMLEventReader reader = xmlif.createXMLEventReader(fr);
+            XMLEventFactory eventFactory = XMLEventFactory.newInstance();
+            XMLEventWriter writer = outputFactory.createXMLEventWriter(new FileWriter(repBase + nomFichier));
+            XMLEvent event = (XMLEvent) reader.next();
+            while (!event.isEndDocument()) {
+                event = (XMLEvent) reader.next();
+                if (event.isEndElement()) {
+                    EndElement nom = event.asEndElement();
+                    if (nom.getName().toString().equals("dossiers")) {
+                        writer.add(eventFactory.createStartElement(new QName("ficheDeSoins"), null, null));
+                        writer.add(eventFactory.createStartElement(new QName("date"), null, null));
+                        writer.add(eventFactory.createCharacters(f.getDate().toString()));
+                        writer.add(eventFactory.createEndElement(new QName("date"), null));
+                        writer.add(eventFactory.createStartElement(new QName("medecin"), null, null));
+                        writer.add(eventFactory.createStartElement(new QName("nom"), null, null));
+                        writer.add(eventFactory.createCharacters(f.getMedecin().getNom()));
+                        writer.add(eventFactory.createEndElement(new QName("nom"), null));
+                        writer.add(eventFactory.createStartElement(new QName("prenom"), null, null));
+                        writer.add(eventFactory.createCharacters(f.getMedecin().getPrenom()));
+                        writer.add(eventFactory.createEndElement(new QName("prenom"), null));
+                        writer.add(eventFactory.createStartElement(new QName("specialite"), null, null));
+                        writer.add(eventFactory.createCharacters(f.getMedecin().getSpecialite()));
+                        writer.add(eventFactory.createEndElement(new QName("specialite"), null));
+                        writer.add(eventFactory.createStartElement(new QName("numero"), null, null));
+                        writer.add(eventFactory.createCharacters(f.getMedecin().getNumTel()));
+                        writer.add(eventFactory.createEndElement(new QName("numero"), null));
+                        writer.add(eventFactory.createEndElement(new QName("medecin"), null));
+                        writer.add(eventFactory.createStartElement(new QName("patient"), null, null));
+                        writer.add(eventFactory.createStartElement(new QName("nom"), null, null));
+                        writer.add(eventFactory.createCharacters(f.getPatient().getNom()));
+                        writer.add(eventFactory.createEndElement(new QName("nom"), null));
+                        writer.add(eventFactory.createStartElement(new QName("prenom"), null, null));
+                        writer.add(eventFactory.createCharacters(f.getPatient().getPrenom()));
+                        writer.add(eventFactory.createEndElement(new QName("prenom"), null));
+                        writer.add(eventFactory.createStartElement(new QName("date-de-naissance"), null, null));
+                        writer.add(eventFactory.createCharacters(f.getPatient().getDateDeNaissance().toString()));
+                        writer.add(eventFactory.createEndElement(new QName("date-de-naissance"), null));
+                        writer.add(eventFactory.createStartElement(new QName("adresse"), null, null));
+                        writer.add(eventFactory.createCharacters(f.getPatient().getAdresse()));
+                        writer.add(eventFactory.createEndElement(new QName("adresse"), null));
+                        writer.add(eventFactory.createStartElement(new QName("numero-securite-social"), null, null));
+                        writer.add(eventFactory.createCharacters(f.getPatient().getNumSecu()));
+                        writer.add(eventFactory.createEndElement(new QName("numero-securite-social"), null));
+                        writer.add(eventFactory.createEndElement(new QName("patient"), null));
+                        for (int i = 0; i < f.getActes().size(); i++) {
+                            Acte a=f.getActes().get(i);
+                            writer.add(eventFactory.createStartElement(new QName("acte"), null, null));
+                            writer.add(eventFactory.createStartElement(new QName("code"), null, null));
+                            writer.add(eventFactory.createCharacters(a.getCode().name()));
+                            writer.add(eventFactory.createEndElement(new QName("code"), null));
+                            writer.add(eventFactory.createStartElement(new QName("coef"), null, null));
+                            writer.add(eventFactory.createCharacters(""+a.getCoef()));
+                            writer.add(eventFactory.createEndElement(new QName("coef"), null));
+                            writer.add(eventFactory.createStartElement(new QName("type"), null, null));
+                            writer.add(eventFactory.createCharacters(a.getType().name()));
+                            writer.add(eventFactory.createEndElement(new QName("type"), null));
+                            writer.add(eventFactory.createStartElement(new QName("observations"), null, null));
+                            writer.add(eventFactory.createCharacters(a.getObservations()));
+                            writer.add(eventFactory.createEndElement(new QName("observations"), null));
+                            writer.add(eventFactory.createEndElement(new QName("acte"), null));
+                        }
+
+                        writer.add(eventFactory.createEndElement(new QName("ficheDeSoins"), null));
+                    }
+                    writer.add(event);
+
+                } else {
+                    writer.add(event);
+                }
+            }
+            writer.add(eventFactory.createEndDocument());
+            writer.flush();
+            writer.close();
+        } catch (XMLStreamException | IOException ex) {
+            Logger.getLogger(EcritureXML.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
